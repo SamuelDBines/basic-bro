@@ -2,8 +2,8 @@ import esbuild from 'esbuild';
 
 await esbuild
 	.build({
-		entryPoints: ['src/client/main.ts'],
-		outfile: 'dist/client/app.js',
+		entryPoints: ['src/client/index.ts'],
+		outfile: 'dist/client/index.js',
 		bundle: true,
 		sourcemap: true,
 		minify: process.env.NODE_ENV === 'production',

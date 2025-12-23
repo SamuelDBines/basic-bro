@@ -10,6 +10,3 @@ export const ClientRender = (element: string = 'app', root: Node) => {
 		throw 'Node does not exist';
 	}
 };
-
-// app.innerHTML = Button();
-app?.appendChild(Button());

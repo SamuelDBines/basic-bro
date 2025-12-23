@@ -1,7 +1,6 @@
 {
   "name": "basic-bro",
-  "version": "0.0.4",
-  "main": "dist/server/index.js",
+  "version": "0.0.5",
   "scripts": {
     "build": "tsc && node scripts/build-client.mjs",
     "lint": "eslint .",
@@ -9,6 +8,20 @@
     "release": "./scripts/release.sh",
     "release:minor": "./scripts/release.sh minor",
     "release:major": "./scripts/release.sh major"
+  },
+  "main": "dist/server/index.js",
+  "types": "dist/server/index.d.ts",
+  "exports": {
+    ".": "./dist/server/index.js",
+    "./server": "./dist/server/index.js",
+    "./client": "./dist/client/index.js"
+  },
+  "typesVersions": {
+    "*": {
+      "server": [
+        "dist/server/index.d.ts"
+      ]
+    }
   },
   "files": [
     "dist",

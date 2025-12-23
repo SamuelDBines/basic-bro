@@ -20,11 +20,11 @@
     "noUnusedParameters": false,
     "noPropertyAccessFromIndexSignature": false,
     "rootDir": "src",
-    "outDir": "dist"
+    "outDir": "dist",
+    "types": [
+      "node"
+    ]
   },
-  "types": [
-    "@types/node",
-  ],
   "include": [
     "src/server/**/*.ts",
   ],
