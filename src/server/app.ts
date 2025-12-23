@@ -21,7 +21,7 @@ import {
 import { compilePath } from './utils';
 import { p } from './logger';
 import { buildStatic } from './static';
-import { openapi, HttpMethod as HTTPMethod, v } from './validate';
+import { openapi, v } from './validate';
 import path from 'node:path';
 
 const ob: Name = {

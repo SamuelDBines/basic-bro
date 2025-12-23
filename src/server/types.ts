@@ -42,11 +42,11 @@ interface BaseRequestContext extends http.IncomingMessage {
 	body?: unknown;
 }
 
-type Handler<ReqExtras = any, ResExtras = any> =
+type useDef<Err> = Middleware<any, any, Err> | Router<any, any, Err>;
+
+export type Handler<ReqExtras = any, ResExtras = any> =
 	| SingleHandler<ReqExtras, ResExtras>
 	| NestedHandlers<ReqExtras, ResExtras>;
-
-type useDef<Err> = Middleware<any, any, Err> | Router<any, any, Err>;
 
 export type RequestContext<ReqExtras = any> = BaseRequestContext & ReqExtras;
 

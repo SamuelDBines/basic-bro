@@ -1,5 +1,14 @@
 import http from 'http';
-import { Schema, NextFunction, RequestContext, Result, Issue } from '../types';
+import {
+	Schema,
+	RequestContext,
+	ResponseContext,
+	Result,
+	Issue,
+	HttpMethod,
+	SingleHandler,
+	Middleware,
+} from './types';
 
 // private Types
 
@@ -25,6 +34,20 @@ type StringMeta = {
 	minLength?: number;
 	maxLength?: number;
 	pattern?: string;
+};
+
+type Route = {
+	method: HttpMethod;
+	path: string;
+	requestBody: Schema<any>;
+	params: Schema<any>;
+	responses: Record<number, Schema<any>>;
+};
+
+type OpenapiOptions = {
+	title: string;
+	version: string;
+	routes: Route[];
 };
 
 // Private
@@ -434,12 +457,8 @@ function array<Item>(item: Schema<Item>) {
 	};
 }
 
-export function validate<T extends Targets>(targets: T) {
-	return (
-		req: RequestContext<T>,
-		res: http.ServerResponse,
-		next: NextFunction
-	) => {
+export function validate<T extends Targets>(targets: T): Middleware {
+	return (req, res, next) => {
 		const errors: Issue[] = [];
 
 		if (targets.params) {
@@ -459,31 +478,59 @@ export function validate<T extends Targets>(targets: T) {
 		}
 
 		if (errors.length) {
-			res.writeHead(400, { 'Content-Type': 'application/json' });
-			res.end(JSON.stringify({ error: 'VALIDATION_ERROR', details: errors }));
+			res
+				.status(400)
+				.json(JSON.stringify({ error: 'VALIDATION_ERROR', details: errors }));
 			return;
 		}
 		next();
 	};
 }
 
-export function withBody<S extends Schema<any>>(
-	schema: S,
-	handler: (
-		req: RequestContext<S>,
-		res: http.ServerResponse,
-		next: NextFunction
-	) => any
-) {
-	return (
-		req: RequestContext<S>,
-		res: http.ServerResponse,
-		next: NextFunction
-	) => handler(req as any, res, next);
-}
+export const openapi = (opts: OpenapiOptions) => {
+	const paths: any = {};
 
-export * from './openapi';
+	for (const r of opts.routes) {
+		paths[r.path] ??= {};
+		paths[r.path][r.method] = {
+			responses: Object.fromEntries(
+				Object.entries(r.responses).map(([code, schema]) => [
+					code,
+					{
+						description: 'Response',
+						content: { 'application/json': { schema: schema.toOpenAPI() } },
+					},
+				])
+			),
+			...(r.requestBody
+				? {
+						requestBody: {
+							required: true,
+							content: {
+								'application/json': { schema: r.requestBody.toOpenAPI() },
+							},
+						},
+				  }
+				: {}),
+		};
+	}
 
-export { string, number, boolean, array, object };
+	return {
+		openapi: '3.1.0',
+		info: { title: opts.title, version: opts.version },
+		paths,
+	};
+};
+
+openapi.route = (r: Route) => r;
+
+// export { string, number, boolean, array, object }; //Keep private for now
 
 export const v = { string, number, boolean, array, object } as const;
+
+export function withBody<S extends Schema<any>>(
+	schema: S,
+	handler: SingleHandler<S, S>
+) {
+	return (req: RequestContext<S>, res: ResponseContext<S>) => handler(req, res);
+}
