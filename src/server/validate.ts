@@ -1,4 +1,3 @@
-import http from 'http';
 import {
 	Schema,
 	RequestContext,
