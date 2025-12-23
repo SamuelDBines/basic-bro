@@ -1,11 +1,14 @@
 {
   "name": "basic-bro",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "main": "dist/server/index.js",
   "scripts": {
     "build": "tsc && node scripts/build-client.mjs",
     "lint": "eslint .",
-    "test": "vitest"
+    "test": "vitest",
+    "release": "./scripts/release.sh",
+    "release:minor": "./scripts/release.sh minor",
+    "release:major": "./scripts/release.sh major"
   },
   "files": [
     "dist",
