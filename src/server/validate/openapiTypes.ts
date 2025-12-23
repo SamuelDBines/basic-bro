@@ -44,10 +44,10 @@ export interface ApiDocs {
 	security:
 		| {
 				api_key: string[];
-		  }
+		  }[]
 		| {
 				ApiKeyAuth: string[];
-		  };
+		  }[];
 }
 
 enum ApiDocType {
@@ -63,7 +63,7 @@ interface OpenapiDocs extends ApiDocs {
 	components: any;
 	security: {
 		ApiKeyAuth: string[];
-	};
+	}[];
 }
 
 interface SwaggerDocs extends ApiDocs {
@@ -78,7 +78,7 @@ interface SwaggerDocs extends ApiDocs {
 	securityDefinitions: object;
 	security: {
 		api_key: string[];
-	};
+	}[];
 }
 
 export const ApiDocTypeHandler = (doc: OpenapiDocs | SwaggerDocs) => {

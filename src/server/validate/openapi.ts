@@ -1,7 +1,7 @@
-import { Schema, HttpMethodType } from './types';
+import { Schema, HttpMethod } from '../types';
 
 type Route = {
-	method: HttpMethodType;
+	method: HttpMethod;
 	path: string;
 	requestBody: Schema<any>;
 	params: Schema<any>;
