@@ -1,0 +1,26 @@
+{
+  "name": "basic-bro",
+  "version": "0.0.1",
+  "main": "dist/server/index.js",
+  "scripts": {
+    "build": "tsc && node scripts/build-client.mjs",
+    "lint": "eslint .",
+    "test": "vitest"
+  },
+  "files": [
+    "dist",
+    "README",
+    "package.json"
+  ],
+  "devDependencies": {
+    "@types/node": "^20.19.27",
+    "@typescript-eslint/parser": "8",
+    "esbuild": "^0.27.1",
+    "eslint": "8",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.16"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  }
+}
