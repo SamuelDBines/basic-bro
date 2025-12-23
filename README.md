@@ -89,8 +89,9 @@ import {
 	sessions,
 	rateLimit,
 	serveStatic,
+	v,
+	validate,
 } from 'basic-bro/server';
-import { v, validate } from '@samuelbines/ex-val';
 
 const publicDir = path.join(__dirname, '..', 'public');
 
@@ -217,8 +218,7 @@ if (app) {
 ## Validation & OpenApi
 
 ```ts
-import { v, openapi, HttpMethod } from '@samuelbines/ex-val';
-import { app, router } from 'basic-bro/server';
+import { app, router, v, openapi, HttpMethod } from 'basic-bro/server';
 
 const app = createApp({
 	title: 'My API',

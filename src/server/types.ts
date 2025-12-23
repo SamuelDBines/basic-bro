@@ -1,5 +1,5 @@
 import http from 'http';
-import type { Schema } from '@samuelbines/ex-val';
+import type { Schema } from './validate';
 
 export type HttpMethod =
 	| 'GET'
