@@ -4,8 +4,10 @@
 - [ ] Feature
 - [ ] Deployment
 - [ ] Docs
+- [ ] Tests
 
-## Does it have tests 
+## Does it have tests
+
 - [ ] Y
 - [ ] N
 
