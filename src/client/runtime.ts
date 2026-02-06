@@ -104,7 +104,6 @@ export function state<T>(initial: T): State<T> {
 		},
 		subscribe(cb: Subscriber<T>) {
 			subs.add(cb);
-			// optional: call immediately with current value
 			cb(value);
 			return () => subs.delete(cb);
 		},

@@ -392,7 +392,7 @@ export function app(
 				method: 'GET',
 				path: opts?.docsPath || '/docs',
 				handler: (req, res) => {
-					r.json(openapi(docs as any));
+					res.json(openapi(docs as any));
 					return;
 				},
 			});
