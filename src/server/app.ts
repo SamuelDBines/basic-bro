@@ -319,13 +319,14 @@ export function app(
 			pattern = compiledPath.pattern;
 			paramNames = compiledPath.paramNames;
 		}
-		// const doc = openapi.route({
-		// 	method: method as HTTPMethod,
-		// 	path,
-		// 	requestBody: v.boolean(),
-		// 	responses: {},
-		// });
-		// docs?.routes?.push(doc as never);
+		const doc = openapi.route({
+			method,
+			path,
+			requestBody: v.boolean(),
+			responses: {},
+			params: {} as any,
+		});
+		docs?.routes?.push(doc as never);
 		routes.push({ method, path, handler, pattern, paramNames });
 	}
 
