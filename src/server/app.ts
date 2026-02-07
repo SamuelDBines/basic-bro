@@ -1,6 +1,8 @@
 import http from 'node:http';
 import { URL } from 'node:url';
 import fs from 'node:fs';
+import { StringDecoder } from "node:string_decoder";
+import { URLSearchParams } from "node:url";
 import { Name } from '../shared/type';
 import {
 	HttpMethod,
@@ -22,6 +24,7 @@ import { compilePath } from './utils';
 import { p } from './logger';
 import { buildStatic } from './static';
 import { openapi, v } from './validate';
+import { parseRequest } from './parser';
 import path from 'node:path';
 
 const ob: Name = {
@@ -270,6 +273,41 @@ export const router = (prefix: string = '', ..._mws: Middleware[]): Router => {
 	return _router;
 };
 
+
+async function parseBody(req: RequestContext, { limitBytes = 10 * 1024 * 1024  } = {}) {
+	const raw: Buffer = await new Promise<Buffer>((resolve, reject) => {
+    let total = 0;
+    const chunks: Buffer[] = [];
+
+    req.on("data", (chunk: Buffer) => {
+      total += chunk.length;
+      if (total > limitBytes) {
+        reject(Object.assign(new Error("Body too large"), { statusCode: 413 }));
+        req.destroy();
+        return;
+      }
+      chunks.push(chunk);
+    });
+
+    req.on("end", () => resolve(Buffer.concat(chunks)));
+    req.on("error", reject);
+  });
+  const ct = (req.headers["content-type"] || "").toLowerCase();
+
+  if (ct.includes("application/json")) {
+    const text = raw.toString("utf8");
+    return text ? JSON.parse(text) : null;
+  }
+
+  if (ct.includes("application/x-www-form-urlencoded")) {
+    const text = raw.toString("utf8");
+    return Object.fromEntries(new URLSearchParams(text));
+  }
+
+  // fallback: treat as text
+  return raw.toString("utf8");
+}
+
 type InitAppOpts = {
 	title?: string;
 	version?: string;
@@ -376,8 +414,9 @@ export function app(
 	}
 
 	const publicStaticIndex = buildStatic(staticPath);
+	let docsRouteAdded = false;
 
-	function handle(req: http.IncomingMessage, res: http.ServerResponse) {
+	async function handle(req: http.IncomingMessage, res: http.ServerResponse) {
 		const r = attachResponseHelpers(res);
 		const parsedUrl = new URL(req.url ?? '/', `http://${req.headers.host}`);
 		const pathname = parsedUrl.pathname;
@@ -387,8 +426,17 @@ export function app(
 		ctx.pathname = pathname;
 		ctx.query = parsedUrl.searchParams;
 		ctx.params = ctx.params ?? {};
+		if (['POST', 'PUT', 'PATCH'].includes(method)) {
+			try {
+				ctx.body = await parseBody(ctx);
+			} catch (err: any) {
+				r.status(err?.statusCode ?? 400).send(err?.message ?? "Bad Request");
+				return;
+			}
+		}
+		
 
-		if (docs.docsPath) {
+		if (docs.docsPath && !docsRouteAdded) {
 			routes.push({
 				method: 'GET',
 				path: opts?.docsPath || '/docs',
@@ -397,6 +445,7 @@ export function app(
 					return;
 				},
 			});
+			docsRouteAdded = true
 		}
 
 		const handler = () => {
