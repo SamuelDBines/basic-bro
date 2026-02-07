@@ -153,7 +153,7 @@ export const api = (opts: ApiOptions) => {
 		})
 		try {
 			return {
-				data: res.json(),
+				data: await res.json(),
 				status: res.status,
 			}
 		} catch(err) {
