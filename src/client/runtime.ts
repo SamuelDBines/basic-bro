@@ -141,9 +141,9 @@ type APIMethods = 'GET' | 'POST'| "PUT" | "PATCH" | "DELETE"
 export const api = (opts: ApiOptions) => {
 	const createUrl = (uri: string) => opts.endpoint + uri;
 	
-	const req = (method: APIMethods, uri: string, body?: Record<string, any>, headers?: Record<string, string>) => {
+	const req = async (method: APIMethods, uri: string, body?: Record<string, any>, headers?: Record<string, string>) => {
 		const url = createUrl(uri);
-		const res = fetch(url, {
+		const res = await fetch(url, {
 			method,
 			body: body && JSON.stringify(body),
 			headers: {
