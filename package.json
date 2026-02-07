@@ -1,6 +1,6 @@
 {
   "name": "basic-bro",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "scripts": {
     "build": "tsc && node scripts/build-client.mjs",
     "lint": "eslint .",
