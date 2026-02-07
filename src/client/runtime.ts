@@ -132,6 +132,47 @@ declare global {
 	}
 }
 
+interface ApiOptions {
+	endpoint: string;
+}
+
+type APIMethods = 'GET' | 'POST'| "PUT" | "PATCH" | "DELETE"
+
+export const api = (opts: ApiOptions) => {
+	const createUrl = (uri: string) => opts.endpoint + uri;
+	
+	const req = (method: APIMethods, uri: string, body?: Record<string, any>, headers?: Record<string, string>) => {
+		const url = createUrl(uri);
+		const res = fetch(url, {
+			method,
+			body: body && JSON.stringify(body),
+			headers: {
+				'Content-Type': 'application/json',
+				...headers,
+			}
+		})
+		try {
+			return {
+				data: res.json(),
+				status: res.status,
+			}
+		} catch(err) {
+			return {
+				err,
+				status: res.status,
+			}
+		}
+	}
+	return {
+		get: (uri: string, headers?: Record<string, string>) => req('GET', uri, undefined, headers),
+		post: (uri: string, body?: Record<string, any>, headers?: Record<string, string>) => req('POST', uri, body, headers),
+		put: (uri: string, body?: Record<string, any>, headers?: Record<string, string>) => req('PUT', uri, body, headers),
+		patch: (uri: string, body?: Record<string, any>, headers?: Record<string, string>) => req('PATCH', uri, body, headers),
+		del: (uri: string, headers?: Record<string, string>) => req('POST', uri, headers)
+	}
+
+}
+
 // export function h(type: any, props: any, ...children: any) {
 // 	props = props || {};
 
